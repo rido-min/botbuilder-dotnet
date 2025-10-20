@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="../../libraries/integration/Microsoft.Bot.Builder.Integration.AspNet.Core/Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
+  <Project Path="../../libraries/Microsoft.Bot.Builder/Microsoft.Bot.Builder.csproj" />
+  <Project Path="../../libraries/Microsoft.Bot.Configuration/Microsoft.Bot.Configuration.csproj" />
+  <Project Path="../../libraries/Microsoft.Bot.Connector.Streaming/Microsoft.Bot.Connector.Streaming.csproj" />
+  <Project Path="../../libraries/Microsoft.Bot.Connector/Microsoft.Bot.Connector.csproj" />
+  <Project Path="../../libraries/Microsoft.Bot.Schema/Microsoft.Bot.Schema.csproj" />
+  <Project Path="../../libraries/Microsoft.Bot.Streaming/Microsoft.Bot.Streaming.csproj" />
+  <Project Path="Sample.Agentic/Sample.Agentic.csproj" />
+</Solution>
