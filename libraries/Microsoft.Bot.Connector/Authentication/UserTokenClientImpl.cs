@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Connector.Authentication
             ServiceClientCredentials credentials,
             string oauthEndpoint,
             HttpClient httpClient,
-            ILogger logger)
+            ILogger logger) 
         {
             _appId = appId;
             _httpClient = httpClient ?? new HttpClient();

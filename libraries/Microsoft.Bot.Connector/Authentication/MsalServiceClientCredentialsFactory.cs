@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Connector.Authentication
     {
         private readonly IConfidentialClientApplication _clientApplication;
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MsalServiceClientCredentialsFactory"/> class.
@@ -36,6 +37,7 @@ namespace Microsoft.Bot.Connector.Authentication
             TenantId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTenantIdKey)?.Value;
             _clientApplication = clientApplication;
             _logger = logger ?? NullLogger.Instance;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -67,6 +69,13 @@ namespace Microsoft.Bot.Connector.Authentication
             if (appId != AppId)
             {
                 throw new InvalidOperationException($"Provided application Id '{appId}' does not match expected application Id '{AppId}'");
+            }
+
+            var configuredAudience = _configuration.GetSection("MicrosoftAgentScope")?.Value;
+
+            if (!string.IsNullOrEmpty(configuredAudience))
+            {
+                return Task.FromResult<ServiceClientCredentials>(new AgenticCredentialsProvider(_configuration));
             }
 
             // Public cloud: default authority, optional scope when authenticating for skill communication.

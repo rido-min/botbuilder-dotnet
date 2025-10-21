@@ -242,20 +242,20 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         private static async Task<ClaimsIdentity> AuthenticateTokenAsync(string authHeader, ICredentialProvider credentials, IChannelProvider channelProvider, string channelId, AuthenticationConfiguration authConfig, string serviceUrl, HttpClient httpClient)
         {
-            if (AseChannelValidation.IsAseChannel(channelId))
-            {
-                return await AseChannelValidation.AuthenticateAseTokenAsync(authHeader, httpClient, authConfig).ConfigureAwait(false);
-            }
+            //if (AseChannelValidation.IsAseChannel(channelId))
+            //{
+            //    return await AseChannelValidation.AuthenticateAseTokenAsync(authHeader, httpClient, authConfig).ConfigureAwait(false);
+            //}
 
-            if (SkillValidation.IsSkillToken(authHeader))
-            {
-                return await SkillValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
-            }
+            //if (SkillValidation.IsSkillToken(authHeader))
+            //{
+            //    return await SkillValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
+            //}
 
-            if (EmulatorValidation.IsTokenFromEmulator(authHeader))
-            {
-                return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
-            }
+            //if (EmulatorValidation.IsTokenFromEmulator(authHeader))
+            //{
+            //    return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig).ConfigureAwait(false);
+            //}
 
             if (channelProvider == null || channelProvider.IsPublicAzure())
             {
