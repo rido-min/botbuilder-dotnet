@@ -46,6 +46,12 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <inheritdoc/>
+        public Task<AuthenticatorResult> GetAgentTokenAsync(bool forceRefresh = false, string fmiPath = "", string userId = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
         public async Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false)
         {
             var watch = Stopwatch.StartNew();

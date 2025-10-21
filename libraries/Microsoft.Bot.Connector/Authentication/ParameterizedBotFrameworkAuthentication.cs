@@ -180,10 +180,10 @@ namespace Microsoft.Bot.Connector.Authentication
             //    return await AseChannelValidation.AuthenticateAseTokenAsync(authHeader).ConfigureAwait(false);
             //}
 
-            //if (SkillValidation.IsSkillToken(authHeader))
-            //{
-            //    return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
-            //}
+            if (SkillValidation.IsSkillToken(authHeader))
+            {
+                return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
+            }
 
             //if (EmulatorValidation.IsTokenFromEmulator(authHeader))
             //{
@@ -208,10 +208,12 @@ namespace Microsoft.Bot.Connector.Authentication
                     "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/", // Auth v3.2, 1.0 token
                     "https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0", // Auth v3.2, 2.0 token
                     "https://sts.windows.net/cab8a31a-1906-4287-a0d8-4eef66b95f6e/", // Auth for US Gov, 1.0 token
-                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0" // Auth for US Gov, 2.0 token
+                    "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e/v2.0", // Auth for US Gov, 2.0 token
+                    _toBotFromChannelTokenIssuer
                     },
 
                     ValidateAudience = true, // CODEQL [cs/web/missing-token-validation] Audience validation takes place manually in code.
+                    ValidAudience = "9d17cc32-c91b-4368-8494-1b29ccb0dbcf",
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(5),
                     RequireSignedTokens = true
@@ -229,7 +231,7 @@ namespace Microsoft.Bot.Connector.Authentication
             var tokenExtractor = new JwtTokenExtractor(
                 _authHttpClient,
                 tokenValidationParameters,
-                _toBotFromEmulatorOpenIdMetadataUrl,
+                _toBotFromChannelOpenIdMetadataUrl,
                 AuthenticationConstants.AllowedSigningAlgorithms);
 
             var identity = await tokenExtractor.GetIdentityAsync(authHeader, channelId, _authConfiguration.RequiredEndorsements).ConfigureAwait(false);

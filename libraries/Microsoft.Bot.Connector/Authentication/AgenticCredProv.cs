@@ -36,17 +36,31 @@ public class AgenticCredentialsProvider : AppCredentials, IAuthenticator
         _clientId = configuration["MicrosoftAppId"] ?? throw new ArgumentNullException("MicrosoftAppId");
         _secret = configuration["MicrosoftAppPassword"] ?? throw new ArgumentNullException("MicrosoftAppPassword");
         _agentScope = configuration["MicrosoftAgentScope"] ?? throw new ArgumentNullException("MicrosoftAgentScope");
+        MicrosoftAppId = _clientId;
     }
 
-    async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
+    /// <summary>
+    /// Create Agent Token.
+    /// </summary>
+    /// <param name="forceRefresh">refresh.</param>
+    /// <param name="fmiPath">AI id.</param>
+    /// <param name="userId">AU Id.</param>
+    /// <returns>auth result.</returns>
+    public async Task<AuthenticatorResult> GetAgentTokenAsync(bool forceRefresh = false, string fmiPath = "", string userId = "")
     {
-        var authRes = await CreateAuthorizationHeaderForAppAsync(_agentScope);
+        var authRes = await CreateAuthorizationHeaderForAppAsync(_agentScope, fmiPath, userId);
         var result = new AuthenticatorResult
         {
             AccessToken = authRes.AccessToken,
             ExpiresOn = authRes.ExpiresOn,
         };
         return result;
+    }
+
+    async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh)
+    {
+        await Task.CompletedTask;
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -76,11 +90,12 @@ public class AgenticCredentialsProvider : AppCredentials, IAuthenticator
     //    throw new NotImplementedException();
     //}
 
-    private async Task<AuthenticationResult> CreateAuthorizationHeaderForAppAsync(string scopes, CancellationToken cancellationToken = default)
+    private async Task<AuthenticationResult> CreateAuthorizationHeaderForAppAsync(string scopes, string fmiPath, string userId, CancellationToken cancellationToken = default)
     {
         var authority = $"https://login.microsoftonline.com/{_tenantId}";
-        var fmiPath = string.Empty; // downstreamApiOptions?.AcquireTokenOptions?.FmiPath ?? throw new InvalidOperationException("FmiPath not set in Auth Options");
-        var userId = string.Empty; // downstreamApiOptions?.AcquireTokenOptions?.ExtraHeadersParameters?["x-ms-agentic-user-id"] ?? throw new InvalidOperationException("x-ms-agentic-user-id not set in ExtraHeadersParameters");
+
+        // var fmiPath = string.Empty; // downstreamApiOptions?.AcquireTokenOptions?.FmiPath ?? throw new InvalidOperationException("FmiPath not set in Auth Options");
+        // var userId = string.Empty; // downstreamApiOptions?.AcquireTokenOptions?.ExtraHeadersParameters?["x-ms-agentic-user-id"] ?? throw new InvalidOperationException("x-ms-agentic-user-id not set in ExtraHeadersParameters");
 
         IList<string> scopesAD = new[] { "api://AzureADTokenExchange/.default" };
 
@@ -144,7 +159,7 @@ public class AgenticCredentialsProvider : AppCredentials, IAuthenticator
 
         return userToken;
     }
-
+       
     //public async Task<string> CreateAuthorizationHeaderForUserAsync(IEnumerable<string> scopes2, AuthorizationHeaderProviderOptions? authorizationHeaderProviderOptions = null, ClaimsPrincipal? claimsPrincipal = null, CancellationToken cancellationToken = default)
     //{
     //    throw new NotImplementedException();

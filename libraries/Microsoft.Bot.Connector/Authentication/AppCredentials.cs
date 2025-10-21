@@ -4,13 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -213,7 +216,11 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (ShouldSetToken())
             {
-                var token = await GetTokenAsync().ConfigureAwait(false);
+                string activityJson = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
+                Activity activity = new JsonSerializer().Deserialize<Activity>(new JsonTextReader(new StringReader(activityJson)));
+                string fmiPath = activity.From.Properties["agenticAppId"]?.ToString();
+                string userId = activity.From.Properties["agenticUserId"]?.ToString();
+                var token = await GetTokenAsync(false, fmiPath, userId).ConfigureAwait(false);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
 
@@ -225,12 +232,14 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="forceRefresh">True to force a refresh of the token; or false to get
         /// a cached token if it exists.</param>
+        /// <param name="fmiPath">the fmi path.</param>
+        /// <param name="userId">the user id.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful, the result contains the access token string.</remarks>
-        public async Task<string> GetTokenAsync(bool forceRefresh = false)
+        public async Task<string> GetTokenAsync(bool forceRefresh = false, string fmiPath = "", string userId = "")
         {
             _authenticator ??= BuildIAuthenticator();
-            var token = await _authenticator.Value.GetTokenAsync(forceRefresh).ConfigureAwait(false);
+            var token = await _authenticator.Value.GetAgentTokenAsync(forceRefresh, fmiPath, userId).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(token.AccessToken))
             {
                 Logger.LogWarning($"{GetType().FullName}.ProcessHttpRequestAsync(): got empty token from call to the configured IAuthenticator.");

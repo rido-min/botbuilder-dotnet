@@ -3,6 +3,7 @@
 
 using System;
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Connector.Authentication
@@ -15,8 +16,9 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <summary>
         /// Creates the a <see cref="BotFrameworkAuthentication" /> instance for anonymous testing scenarios.
         /// </summary>
+        /// <param name="config">Configuration.</param>
         /// <returns>A new <see cref="BotFrameworkAuthentication" /> instance.</returns>
-        public static BotFrameworkAuthentication Create()
+        public static BotFrameworkAuthentication Create(IConfiguration config)
         {
             return Create(
                 channelService: null,
@@ -28,7 +30,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 toBotFromChannelOpenIdMetadataUrl: null,
                 toBotFromEmulatorOpenIdMetadataUrl: null,
                 callerId: null,
-                credentialFactory: new PasswordServiceClientCredentialFactory(),
+                credentialFactory: new PasswordServiceClientCredentialFactory(config),
                 authConfiguration: new AuthenticationConfiguration(),
                 httpClientFactory: null,
                 logger: null);
@@ -76,7 +78,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 !string.IsNullOrEmpty(callerId))
             {
                 // if we have any of the 'parameterized' properties defined we'll assume this is the parameterized code
-
+                
                 return new ParameterizedBotFrameworkAuthentication(
                     validateAuthority,
                     toChannelFromBotLoginUrl,

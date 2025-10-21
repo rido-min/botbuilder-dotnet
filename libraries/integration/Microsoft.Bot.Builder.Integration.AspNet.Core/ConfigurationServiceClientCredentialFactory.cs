@@ -36,6 +36,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     public class ConfigurationServiceClientCredentialFactory : ServiceClientCredentialsFactory
     {
         private readonly ServiceClientCredentialsFactory _inner;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationServiceClientCredentialFactory"/> class.
@@ -45,6 +46,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <param name="logger">A logger to use.</param>
         public ConfigurationServiceClientCredentialFactory(IConfiguration configuration, HttpClient httpClient = null, ILogger logger = null)
         {
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             var appType = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppTypeKey)?.Value;
             var appId = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppIdKey)?.Value;
             var password = configuration.GetSection(MicrosoftAppCredentials.MicrosoftAppPasswordKey)?.Value;
@@ -91,7 +93,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         throw new ArgumentException($"{MicrosoftAppCredentials.MicrosoftAppPasswordKey} is required for SingleTenant in configuration.");
                     }
 
-                    _inner = new PasswordServiceClientCredentialFactory(appId, password, tenantId, httpClient, logger);
+                    _inner = new PasswordServiceClientCredentialFactory(_configuration);
                     break;
 
                 default: // MultiTenant

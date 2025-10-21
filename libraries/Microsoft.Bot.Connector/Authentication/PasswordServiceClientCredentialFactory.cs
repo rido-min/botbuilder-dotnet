@@ -5,6 +5,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 
@@ -17,6 +18,7 @@ namespace Microsoft.Bot.Connector.Authentication
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PasswordServiceClientCredentialFactory"/> class.
@@ -24,6 +26,18 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         public PasswordServiceClientCredentialFactory()
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PasswordServiceClientCredentialFactory"/> class.
+        /// </summary>
+        /// <param name="config"> Configuration.</param>
+        public PasswordServiceClientCredentialFactory(IConfiguration config)
+        {
+            _configuration = config;
+            AppId = config["MicrosoftAppId"];
+            Password = config["MicrosoftAppPassword"];
+            TenantId = config["MicrosoftAppTenantId"];
         }
 
         /// <summary>
@@ -105,8 +119,9 @@ namespace Microsoft.Bot.Connector.Authentication
             }
             else
             {
-                return Task.FromResult<ServiceClientCredentials>(new PrivateCloudAppCredentials(
-                    AppId, Password, TenantId, _httpClient, _logger, oauthScope, loginEndpoint, validateAuthority));
+                //return Task.FromResult<ServiceClientCredentials>(new PrivateCloudAppCredentials(
+                //    AppId, Password, TenantId, _httpClient, _logger, oauthScope, loginEndpoint, validateAuthority));
+                return Task.FromResult<ServiceClientCredentials>(new AgenticCredentialsProvider(_configuration));
             }
         }
 

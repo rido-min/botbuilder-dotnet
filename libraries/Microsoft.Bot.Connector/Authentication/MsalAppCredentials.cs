@@ -152,6 +152,12 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <inheritdoc/>
+        public Task<AuthenticatorResult> GetAgentTokenAsync(bool forceRefresh = false, string fmiPath = "", string userId = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
         protected override Lazy<IAuthenticator> BuildIAuthenticator()
         {
             return new Lazy<IAuthenticator>(() => this, LazyThreadSafetyMode.ExecutionAndPublication);
@@ -254,6 +260,6 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return RetryParams.StopRetrying;
-        }
+        }     
     }
 }
