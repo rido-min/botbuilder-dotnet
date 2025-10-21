@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +33,8 @@ namespace Microsoft.Bot.Connector.Authentication
         private readonly AuthenticationConfiguration _authConfiguration;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
+        private readonly string _msAppId;
 
         public ParameterizedBotFrameworkAuthentication(
             bool validateAuthority,
@@ -45,7 +48,8 @@ namespace Microsoft.Bot.Connector.Authentication
             ServiceClientCredentialsFactory credentialsFactory,
             AuthenticationConfiguration authConfiguration,
             IHttpClientFactory httpClientFactory,
-            ILogger logger)
+            ILogger logger,
+            IConfiguration configuration)
         {
             _validateAuthority = validateAuthority;
             _toChannelFromBotLoginUrl = toChannelFromBotLoginUrl;
@@ -59,6 +63,8 @@ namespace Microsoft.Bot.Connector.Authentication
             _authConfiguration = authConfiguration;
             _httpClientFactory = httpClientFactory;
             _logger = logger ?? NullLogger.Instance;
+            _configuration = configuration;
+            _msAppId = configuration.GetSection("MicrosoftAppId")?.Value;
         }
 
         public override string GetOriginatingAudience()
@@ -182,7 +188,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (SkillValidation.IsSkillToken(authHeader))
             {
-                return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, cancellationToken).ConfigureAwait(false);
+                return await SkillValidation_AuthenticateChannelTokenAsync(authHeader, channelId, _msAppId, cancellationToken).ConfigureAwait(false);
             }
 
             //if (EmulatorValidation.IsTokenFromEmulator(authHeader))
@@ -194,7 +200,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         // The following code is based on SkillValidation.AuthenticateChannelToken
-        private async Task<ClaimsIdentity> SkillValidation_AuthenticateChannelTokenAsync(string authHeader, string channelId, CancellationToken cancellationToken)
+        private async Task<ClaimsIdentity> SkillValidation_AuthenticateChannelTokenAsync(string authHeader, string channelId, string appId, CancellationToken cancellationToken)
         {
             var tokenValidationParameters =
                 new TokenValidationParameters
@@ -213,7 +219,7 @@ namespace Microsoft.Bot.Connector.Authentication
                     },
 
                     ValidateAudience = true, // CODEQL [cs/web/missing-token-validation] Audience validation takes place manually in code.
-                    ValidAudience = "9d17cc32-c91b-4368-8494-1b29ccb0dbcf",
+                    ValidAudience = appId,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.FromMinutes(5),
                     RequireSignedTokens = true

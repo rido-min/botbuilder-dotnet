@@ -33,7 +33,8 @@ namespace Microsoft.Bot.Connector.Authentication
                 credentialFactory: new PasswordServiceClientCredentialFactory(config),
                 authConfiguration: new AuthenticationConfiguration(),
                 httpClientFactory: null,
-                logger: null);
+                logger: null,
+                config);
         }
 
         /// <summary>
@@ -52,6 +53,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="authConfiguration">The <see cref="AuthenticationConfiguration" /> to use.</param>
         /// <param name="httpClientFactory">The <see cref="IHttpClientFactory" /> to use.</param>
         /// <param name="logger">The <see cref="ILogger" /> to use.</param>
+        /// <param name="configuration">The <see cref="IConfiguration" /> to use.</param>
         /// <returns>A new <see cref="BotFrameworkAuthentication" /> instance.</returns>
         public static BotFrameworkAuthentication Create(
             string channelService,
@@ -66,7 +68,8 @@ namespace Microsoft.Bot.Connector.Authentication
             ServiceClientCredentialsFactory credentialFactory,
             AuthenticationConfiguration authConfiguration,
             IHttpClientFactory httpClientFactory,
-            ILogger logger)
+            ILogger logger,
+            IConfiguration configuration)
         {
             if (
                 !string.IsNullOrEmpty(toChannelFromBotLoginUrl) || 
@@ -91,7 +94,8 @@ namespace Microsoft.Bot.Connector.Authentication
                     credentialFactory,
                     authConfiguration,
                     httpClientFactory,
-                    logger);
+                    logger, 
+                    configuration);
             }
             else
             {

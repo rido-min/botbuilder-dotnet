@@ -8,8 +8,8 @@ using Sample.Agentic;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddSingleton<BotFrameworkAuthentication, AgenticAuthentication>();
 builder.Services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
+
 builder.Services.AddSingleton<IBotFrameworkHttpAdapter>(provider =>
     new CloudAdapter(
         provider.GetRequiredService<BotFrameworkAuthentication>(),

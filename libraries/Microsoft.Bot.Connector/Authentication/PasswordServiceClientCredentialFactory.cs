@@ -119,6 +119,8 @@ namespace Microsoft.Bot.Connector.Authentication
             }
             else
             {
+                // TODO: Review When to use AgenticCredentialsProvider vs PrivateCloudAppCredentials
+
                 //return Task.FromResult<ServiceClientCredentials>(new PrivateCloudAppCredentials(
                 //    AppId, Password, TenantId, _httpClient, _logger, oauthScope, loginEndpoint, validateAuthority));
                 return Task.FromResult<ServiceClientCredentials>(new AgenticCredentialsProvider(_configuration));

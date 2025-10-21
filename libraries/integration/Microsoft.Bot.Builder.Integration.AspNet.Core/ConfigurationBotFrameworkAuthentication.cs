@@ -55,7 +55,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 credentialsFactory ?? new ConfigurationServiceClientCredentialFactory(configuration),
                 authConfiguration ?? new AuthenticationConfiguration(),
                 httpClientFactory,
-                logger);
+                logger,
+                configuration);
         }
 
         /// <inheritdoc />
