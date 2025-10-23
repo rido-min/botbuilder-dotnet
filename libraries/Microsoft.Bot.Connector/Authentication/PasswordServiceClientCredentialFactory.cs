@@ -106,23 +106,24 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 throw new InvalidOperationException($"Invalid appId {appId} does not match expected {AppId}");
             }
-                
-            if (loginEndpoint.Equals(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
+
+            if (loginEndpoint?.Equals(AuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase) == true)
             {
                 return Task.FromResult<ServiceClientCredentials>(new MicrosoftAppCredentials(
                     appId, Password, TenantId, _httpClient, _logger, oauthScope));
             }
-            else if (loginEndpoint.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase))
+            else if (loginEndpoint?.Equals(GovernmentAuthenticationConstants.ToChannelFromBotLoginUrlTemplate, StringComparison.OrdinalIgnoreCase) == true)
             {
                 return Task.FromResult<ServiceClientCredentials>(new MicrosoftGovernmentAppCredentials(
                     appId, Password, TenantId, _httpClient, _logger, oauthScope));
             }
+            else if (oauthScope?.Equals("https://api.botframework.us/.default", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return Task.FromResult<ServiceClientCredentials>(new PrivateCloudAppCredentials(
+                    appId, Password, TenantId, _httpClient, _logger, oauthScope, loginEndpoint, validateAuthority));
+            }
             else
             {
-                // TODO: Review When to use AgenticCredentialsProvider vs PrivateCloudAppCredentials
-
-                //return Task.FromResult<ServiceClientCredentials>(new PrivateCloudAppCredentials(
-                //    AppId, Password, TenantId, _httpClient, _logger, oauthScope, loginEndpoint, validateAuthority));
                 return Task.FromResult<ServiceClientCredentials>(new AgenticCredentialsProvider(_configuration));
             }
         }

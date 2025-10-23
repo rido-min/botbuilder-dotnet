@@ -239,7 +239,16 @@ namespace Microsoft.Bot.Connector.Authentication
         public async Task<string> GetTokenAsync(bool forceRefresh = false, string fmiPath = "", string userId = "")
         {
             _authenticator ??= BuildIAuthenticator();
-            var token = await _authenticator.Value.GetAgentTokenAsync(forceRefresh, fmiPath, userId).ConfigureAwait(false);
+            AuthenticatorResult token;
+            if (!string.IsNullOrEmpty(fmiPath))
+            {
+                token = await _authenticator.Value.GetAgentTokenAsync(forceRefresh, fmiPath, userId).ConfigureAwait(false);
+            }
+            else
+            {
+                token = await _authenticator.Value.GetTokenAsync(forceRefresh).ConfigureAwait(false);
+            }
+
             if (string.IsNullOrWhiteSpace(token.AccessToken))
             {
                 Logger.LogWarning($"{GetType().FullName}.ProcessHttpRequestAsync(): got empty token from call to the configured IAuthenticator.");
