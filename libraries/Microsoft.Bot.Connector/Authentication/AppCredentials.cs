@@ -228,11 +228,18 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (ShouldSetToken())
             {
-                string activityJson = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
-                Activity activity = new JsonSerializer().Deserialize<Activity>(new JsonTextReader(new StringReader(activityJson)));
-                string agenticIdentity = activity.From.Properties["agenticAppId"]?.ToString();
-                string agenticUserId = activity.From.Properties["agenticUserId"]?.ToString();
-                string tenantId = activity.From.Properties["tenantId"]?.ToString();
+                string agenticIdentity = string.Empty;
+                string agenticUserId = string.Empty;
+                string tenantId = string.Empty;
+                if (request.Content != null)
+                {
+                    string activityJson = await request.Content!.ReadAsStringAsync().ConfigureAwait(false);
+                    Activity activity = new JsonSerializer().Deserialize<Activity>(new JsonTextReader(new StringReader(activityJson)));
+                    agenticIdentity = activity.From.Properties["agenticAppId"]?.ToString();
+                    agenticUserId = activity.From.Properties["agenticUserId"]?.ToString();
+                    tenantId = activity.From.Properties["tenantId"]?.ToString();
+                }
+
                 var token = await GetTokenAsync(true, agenticIdentity, agenticUserId, tenantId).ConfigureAwait(false);
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
