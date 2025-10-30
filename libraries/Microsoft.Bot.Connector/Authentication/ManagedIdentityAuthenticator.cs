@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <inheritdoc/>
-        public async Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false)
+        public async Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false, string agenticId = "", string agenticUserId = "", string tenantId = "")
         {
             var watch = Stopwatch.StartNew();
 
