@@ -5,10 +5,33 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Identity.Abstractions;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.TokenCacheProviders.InMemory;
 using Sample.Agentic;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddEnvironmentVariables();
+
+builder.Services
+    .AddTokenAcquisition()
+    .AddInMemoryTokenCaches()
+    .AddHttpClient()
+    .AddAgentIdentities();
+
+builder.Services.Configure<MicrosoftIdentityApplicationOptions>(options =>
+{
+    options.Instance = "https://login.microsoftonline.com/";
+    options.ClientId = builder.Configuration["MicrosoftAppId"];
+    options.TenantId = builder.Configuration["MicrosoftAppTenantId"];
+    options.ClientCredentials = new[]
+    {
+        new CredentialDescription()
+        {
+            SourceType = CredentialSource.ClientSecret,
+            ClientSecret = builder.Configuration["MicrosoftAppPassword"]
+        }
+    };
+});
 
 builder.Services.AddSingleton<CustomAuthenticatorFactory>();
 builder.Services.AddSingleton<BotFrameworkAuthentication>(sp =>
@@ -22,9 +45,9 @@ builder.Services.AddSingleton<BotFrameworkAuthentication>(sp =>
 });
 
 builder.Services.AddSingleton<IBotFrameworkHttpAdapter>(sp => 
-    new CustomCloudAdapter(
+    new CloudAdapter(
         sp.GetRequiredService<BotFrameworkAuthentication>(), 
-        sp.GetService<ILogger<CustomCloudAdapter>>() ?? NullLogger<CustomCloudAdapter>.Instance));
+        sp.GetService<ILogger<CloudAdapter>>() ?? NullLogger<CloudAdapter>.Instance));
 
 builder.Services.AddTransient<IBot, EchoBot>();
 

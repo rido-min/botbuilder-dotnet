@@ -5,16 +5,17 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Identity.Abstractions;
 using Microsoft.Rest;
 
 namespace Sample.Agentic
 {
-    public class CustomAuthenticatorFactory()
+    public class CustomAuthenticatorFactory(IAuthorizationHeaderProvider tokenProvider, IConfiguration configuration)
         : ServiceClientCredentialsFactory
     {
         public override Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
         {
-            var res = new CustomAuthenticator()
+            var res = new CustomAuthenticator(tokenProvider, configuration)
             {
                 MicrosoftAppId = appId,
             };
