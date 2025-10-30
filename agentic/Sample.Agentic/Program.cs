@@ -4,27 +4,27 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Logging.Abstractions;
 using Sample.Agentic;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
-//builder.Services.AddSingleton<BotFrameworkAuthentication>(sp =>
-//{
-//    return new ConfigurationBotFrameworkAuthentication(
-//        builder.Configuration,
-//        new CustomAuthenticatorFactory(),
-//        null,
-//        sp.GetService<IHttpClientFactory>());
-//});
-builder.Services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
+builder.Services.AddSingleton<CustomAuthenticatorFactory>();
+builder.Services.AddSingleton<BotFrameworkAuthentication>(sp =>
+{
+    return new ConfigurationBotFrameworkAuthentication(
+        builder.Configuration,
+        sp.GetService<CustomAuthenticatorFactory>(),
+        null,
+        sp.GetService<IHttpClientFactory>(),
+        null);
+});
 
-builder.Services.AddSingleton(sp => 
-    new CloudAdapter(
+builder.Services.AddSingleton<IBotFrameworkHttpAdapter>(sp => 
+    new CustomCloudAdapter(
         sp.GetRequiredService<BotFrameworkAuthentication>(), 
-        sp.GetService<ILogger<CloudAdapter>>()));
-
-builder.Services.AddSingleton<IBotFrameworkHttpAdapter>(sp => sp.GetService<CloudAdapter>());
+        sp.GetService<ILogger<CustomCloudAdapter>>() ?? NullLogger<CustomCloudAdapter>.Instance));
 
 builder.Services.AddTransient<IBot, EchoBot>();
 

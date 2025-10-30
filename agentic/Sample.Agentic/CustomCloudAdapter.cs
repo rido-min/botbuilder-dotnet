@@ -6,8 +6,8 @@ using Microsoft.Bot.Connector.Authentication;
 
 namespace Sample.Agentic
 {
-    public class CustomCloudAdapter(BotFrameworkAuthentication auth) 
-        : CloudAdapter(auth)
+    public class CustomCloudAdapter(BotFrameworkAuthentication auth, ILogger logger)
+        : CloudAdapter(auth, logger)
     {
     }
 }

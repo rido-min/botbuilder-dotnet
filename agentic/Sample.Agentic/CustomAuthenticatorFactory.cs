@@ -14,7 +14,11 @@ namespace Sample.Agentic
     {
         public override Task<ServiceClientCredentials> CreateCredentialsAsync(string appId, string audience, string loginEndpoint, bool validateAuthority, CancellationToken cancellationToken)
         {
-            var res = new CustomAuthenticator();
+            var res = new CustomAuthenticator()
+            {
+                MicrosoftAppId = appId,
+            };
+            
             return Task.FromResult<ServiceClientCredentials>(res);
         }
 
