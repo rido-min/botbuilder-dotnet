@@ -4,13 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -78,8 +81,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </value>
         public virtual string ChannelAuthTenant
         {
-            get => string.IsNullOrEmpty(AuthTenant) 
-                ? DefaultChannelAuthTenant 
+            get => string.IsNullOrEmpty(AuthTenant)
+                ? DefaultChannelAuthTenant
                 : AuthTenant;
             set
             {
@@ -119,7 +122,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// The OAuth scope to use.
         /// </value>
-        public virtual string OAuthScope => string.IsNullOrEmpty(_oAuthScope) 
+        public virtual string OAuthScope => string.IsNullOrEmpty(_oAuthScope)
             ? ToChannelFromBotOAuthScope
             : _oAuthScope;
 
@@ -213,8 +216,33 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             if (ShouldSetToken())
             {
-                var token = await GetTokenAsync().ConfigureAwait(false);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                string agenticAppId = string.Empty;
+                string agenticUserId = string.Empty;
+                string tenantId = string.Empty;
+                string agenticAppBlueprintId = string.Empty;
+                if (request.Content is not null)
+                {
+                    var activityJson = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var activity = new JsonSerializer().Deserialize<Activity>(new JsonTextReader(new StringReader(activityJson)));
+                    if (activity is not null && activity.From is not null && activity.From.Properties is not null)
+                    {
+                        agenticAppId = activity.From.Properties.ContainsKey("agenticAppId")
+                            ? activity.From.Properties["agenticAppId"].ToString()
+                            : string.Empty;
+                        agenticUserId = activity.From.Properties.ContainsKey("agenticUserId")
+                            ? activity.From.Properties["agenticUserId"].ToString()
+                            : string.Empty;
+                        tenantId = activity.From.Properties.ContainsKey("tenantId")
+                            ? activity.From.Properties["tenantId"].ToString()
+                            : string.Empty;
+                        agenticAppBlueprintId = activity.From.Properties.ContainsKey("agenticAppBlueprintId")
+                            ? activity.From.Properties["agenticAppBlueprintId"].ToString()
+                            : string.Empty;
+                    }
+
+                    var token = await GetTokenAsync(true, agenticAppId, agenticUserId, tenantId, agenticAppBlueprintId, cancellationToken).ConfigureAwait(false);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
             }
 
             await base.ProcessHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
@@ -225,12 +253,17 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="forceRefresh">True to force a refresh of the token; or false to get
         /// a cached token if it exists.</param>
+        /// <param name="agenticAppId">The agentic ID for which the token is requested.</param>
+        /// <param name="agenticUserId">The agentic user ID for which the token is requested.</param>
+        /// <param name="tenantId">The tenant ID for which the token is requested.</param>
+        /// <param name="agenticAppBlueprintId">The agent blueprint ID for which the token is requested.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful, the result contains the access token string.</remarks>
-        public async Task<string> GetTokenAsync(bool forceRefresh = false)
+        public async Task<string> GetTokenAsync(bool forceRefresh = false, string agenticAppId = "", string agenticUserId = "", string tenantId = "", string agenticAppBlueprintId = "", CancellationToken cancellationToken = default)
         {
             _authenticator ??= BuildIAuthenticator();
-            var token = await _authenticator.Value.GetTokenAsync(forceRefresh).ConfigureAwait(false);
+            var token = await _authenticator.Value.GetTokenAsync(forceRefresh, agenticAppId, agenticUserId, tenantId, agenticAppBlueprintId, cancellationToken).ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(token.AccessToken))
             {
                 Logger.LogWarning($"{GetType().FullName}.ProcessHttpRequestAsync(): got empty token from call to the configured IAuthenticator.");

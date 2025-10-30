@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 .Build();
         }
 
-        async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh, string agenticId, string agenticUserId, string tenantId)
+        async Task<AuthenticatorResult> IAuthenticator.GetTokenAsync(bool forceRefresh, string agenticAppId, string agenticUserId, string tenantId, string agenticBlueprintId, CancellationToken cancellationToken)
         {
             var watch = Stopwatch.StartNew();
 

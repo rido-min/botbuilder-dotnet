@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <inheritdoc/>
-        public async Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false, string agenticId = "", string agenticUserId = "", string tenantId = "")
+        public async Task<AuthenticatorResult> GetTokenAsync(bool forceRefresh = false, string agenticAppId = "", string agenticUserId = "", string tenantId = "", string agenticBlueprintId = "", CancellationToken cancellationToken = default)
         {
             var watch = Stopwatch.StartNew();
 
