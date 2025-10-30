@@ -81,8 +81,8 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </value>
         public virtual string ChannelAuthTenant
         {
-            get => string.IsNullOrEmpty(AuthTenant) 
-                ? DefaultChannelAuthTenant 
+            get => string.IsNullOrEmpty(AuthTenant)
+                ? DefaultChannelAuthTenant
                 : AuthTenant;
             set
             {
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// The OAuth scope to use.
         /// </value>
-        public virtual string OAuthScope => string.IsNullOrEmpty(_oAuthScope) 
+        public virtual string OAuthScope => string.IsNullOrEmpty(_oAuthScope)
             ? ToChannelFromBotOAuthScope
             : _oAuthScope;
 
@@ -224,22 +224,25 @@ namespace Microsoft.Bot.Connector.Authentication
                 {
                     var activityJson = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var activity = new JsonSerializer().Deserialize<Activity>(new JsonTextReader(new StringReader(activityJson)));
-                    agenticAppId = activity.From.Properties.ContainsKey("agenticAppId") 
-                        ? activity.From.Properties["agenticAppId"].ToString() 
-                        : string.Empty;
-                    agenticUserId = activity.From.Properties.ContainsKey("agenticUserId") 
-                        ? activity.From.Properties["agenticUserId"].ToString() 
-                        : string.Empty;
-                    tenantId = activity.From.Properties.ContainsKey("tenantId") 
-                        ? activity.From.Properties["tenantId"].ToString() 
-                        : string.Empty;
-                    agenticAppBlueprintId = activity.From.Properties.ContainsKey("agenticAppBlueprintId") 
-                        ? activity.From.Properties["agenticAppBlueprintId"].ToString() 
-                        : string.Empty;
-                }
+                    if (activity is not null && activity.From is not null && activity.From.Properties is not null)
+                    {
+                        agenticAppId = activity.From.Properties.ContainsKey("agenticAppId")
+                            ? activity.From.Properties["agenticAppId"].ToString()
+                            : string.Empty;
+                        agenticUserId = activity.From.Properties.ContainsKey("agenticUserId")
+                            ? activity.From.Properties["agenticUserId"].ToString()
+                            : string.Empty;
+                        tenantId = activity.From.Properties.ContainsKey("tenantId")
+                            ? activity.From.Properties["tenantId"].ToString()
+                            : string.Empty;
+                        agenticAppBlueprintId = activity.From.Properties.ContainsKey("agenticAppBlueprintId")
+                            ? activity.From.Properties["agenticAppBlueprintId"].ToString()
+                            : string.Empty;
+                    }
 
-                var token = await GetTokenAsync(true, agenticAppId, agenticUserId, tenantId, agenticAppBlueprintId, cancellationToken).ConfigureAwait(false);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var token = await GetTokenAsync(true, agenticAppId, agenticUserId, tenantId, agenticAppBlueprintId, cancellationToken).ConfigureAwait(false);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                }
             }
 
             await base.ProcessHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
