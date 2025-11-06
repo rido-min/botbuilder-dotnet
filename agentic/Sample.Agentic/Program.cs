@@ -34,6 +34,7 @@ builder.Services.Configure<MicrosoftIdentityApplicationOptions>(options =>
 });
 
 builder.Services.AddSingleton<CustomAuthenticatorFactory>();
+
 builder.Services.AddSingleton<BotFrameworkAuthentication>(sp =>
 {
     return new ConfigurationBotFrameworkAuthentication(

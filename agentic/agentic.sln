@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Streaming", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Integration.AspNet.Core", "..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj", "{862E5E17-A52E-87BF-D1B0-04CD2C823695}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bfpatch", "..\..\temp\bfpatch\bfpatch\bfpatch.csproj", "{88968997-0107-9E4D-D591-B5C8CB4C3AC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Echo", "Sample.Echo\Sample.Echo.csproj", "{B8E82657-8B20-49A4-8667-203B8D9FEF9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,8 +61,19 @@ Global
 		{862E5E17-A52E-87BF-D1B0-04CD2C823695}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{862E5E17-A52E-87BF-D1B0-04CD2C823695}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{862E5E17-A52E-87BF-D1B0-04CD2C823695}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88968997-0107-9E4D-D591-B5C8CB4C3AC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88968997-0107-9E4D-D591-B5C8CB4C3AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88968997-0107-9E4D-D591-B5C8CB4C3AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88968997-0107-9E4D-D591-B5C8CB4C3AC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8E82657-8B20-49A4-8667-203B8D9FEF9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8E82657-8B20-49A4-8667-203B8D9FEF9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8E82657-8B20-49A4-8667-203B8D9FEF9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8E82657-8B20-49A4-8667-203B8D9FEF9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0E2E02E0-C344-4B6E-8F66-4D3D5FC85A0F}
 	EndGlobalSection
 EndGlobal
