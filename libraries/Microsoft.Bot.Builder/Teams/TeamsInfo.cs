@@ -501,8 +501,18 @@ namespace Microsoft.Bot.Builder.Teams
                 throw new InvalidOperationException("The GetMembers operation needs a valid user Id.");
             }
 
-            var teamMember = await ((Conversations)connectorClient.Conversations).GetConversationMemberAsync(userId, conversationId, cancellationToken).ConfigureAwait(false);
-            var teamsChannelAccount = JObject.FromObject(teamMember).ToObject<TeamsChannelAccount>();
+            // var teamMember = await ((Conversations)connectorClient.Conversations).GetConversationMemberAsync(userId, conversationId, cancellationToken).ConfigureAwait(false);
+
+            var opResp = await connectorClient.Conversations.GetConversationMemberWithHttpMessagesAsync(userId, conversationId, null!, cancellationToken).ConfigureAwait(false);
+            ChannelAccount teamMember = opResp.Body;
+            
+            // var teamsChannelAccount = JObject.FromObject(teamMember).ToObject<TeamsChannelAccount>();
+            
+            var teamsChannelAccount = new TeamsChannelAccount
+            {
+                Id = teamMember.Id,
+                Name = teamMember.Name,
+            };
             return teamsChannelAccount;
         }
 

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Agentic", "Sample.Agentic\Sample.Agentic.csproj", "{096A2009-0364-4BF7-8207-0ED174FC4630}"
 EndProject
@@ -22,6 +22,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bfpatch", "..\..\temp\bfpatch\bfpatch\bfpatch.csproj", "{88968997-0107-9E4D-D591-B5C8CB4C3AC7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Echo", "Sample.Echo\Sample.Echo.csproj", "{B8E82657-8B20-49A4-8667-203B8D9FEF9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rido.BFLite.Core", "..\..\Rido.BFLite\src\Rido.BFLite.Core\Rido.BFLite.Core.csproj", "{016BE7AE-62BC-F730-7BBF-7AADAAC5BC27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rido.BFLite.Compat.Adapter", "..\..\Rido.BFLite\src\Rido.BFLite.Compat.Adapter\Rido.BFLite.Compat.Adapter.csproj", "{CC64903C-609F-0ED6-D815-5F3ED3A6D69C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +73,14 @@ Global
 		{B8E82657-8B20-49A4-8667-203B8D9FEF9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8E82657-8B20-49A4-8667-203B8D9FEF9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8E82657-8B20-49A4-8667-203B8D9FEF9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{016BE7AE-62BC-F730-7BBF-7AADAAC5BC27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{016BE7AE-62BC-F730-7BBF-7AADAAC5BC27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{016BE7AE-62BC-F730-7BBF-7AADAAC5BC27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{016BE7AE-62BC-F730-7BBF-7AADAAC5BC27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC64903C-609F-0ED6-D815-5F3ED3A6D69C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC64903C-609F-0ED6-D815-5F3ED3A6D69C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC64903C-609F-0ED6-D815-5F3ED3A6D69C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC64903C-609F-0ED6-D815-5F3ED3A6D69C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

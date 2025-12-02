@@ -480,5 +480,15 @@ namespace Microsoft.Bot.Connector
         /// </exception>
         /// <returns>A task that represents the <see cref="HttpOperationResponse"/>.</returns>
         Task<HttpOperationResponse<ResourceResponse>> UploadAttachmentWithHttpMessagesAsync(string conversationId, AttachmentData attachmentUpload, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Returns members of a conversation.
+        /// </summary>
+        /// <param name="userId">UserId.</param>
+        /// <param name="conversationId">ConversationId.</param>
+        /// <param name="customHeaders">custom headers.</param>
+        /// <param name="cancellationToken">cancellation token.</param>
+        /// <returns>Channel Account.</returns>
+        Task<HttpOperationResponse<ChannelAccount>> GetConversationMemberWithHttpMessagesAsync(string userId, string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
