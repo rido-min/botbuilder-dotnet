@@ -15,7 +15,7 @@ This repository contains the .NET version of the Microsoft Bot Framework SDK, a 
 - **.NET SDK**: Version 6.x (see `global.json`)
 - **IDE**: Visual Studio 2019 or later
 - **Solution File**: `Microsoft.Bot.Builder.sln`
-- **Package Output**: Built packages go to `outputPackages/` directory
+- **Package Output**: Built packages go to `outputpackages/` directory
 
 ### Building the Project
 ```bash
@@ -101,7 +101,7 @@ dotnet build Microsoft.Bot.Builder.sln
 - Don't use literal strings in localized contexts (CA1303 disabled but be mindful)
 - Avoid problematic synchronous waits when possible
 - Don't use `ToLower()` for comparison, use ordinal string comparison
-- Avoid URI parameters as strings when appropriate
+- Use Uri type instead of string parameters for methods that accept URIs (CA1054 rule is disabled but still a best practice)
 
 ## Support Channels
 - GitHub Issues: Bug reports and feature requests
