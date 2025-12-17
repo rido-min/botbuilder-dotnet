@@ -86,5 +86,10 @@ namespace Microsoft.Bot.Builder.Tests
         {
             throw new NotImplementedException();
         }
+
+        public Task<HttpOperationResponse<ChannelAccount>> GetConversationMemberWithHttpMessagesAsync(string userId, string conversationId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

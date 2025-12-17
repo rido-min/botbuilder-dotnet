@@ -458,7 +458,7 @@ namespace Microsoft.Bot.Connector
         /// The cancellation token.
         /// </param>
         /// <returns>The conversation member.</returns>
-        public static async Task<ChannelAccount> GetConversationMemberAsync(this Conversations operations, string userId, string conversationId, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<ChannelAccount> GetConversationMemberAsync(this IConversations operations, string userId, string conversationId, CancellationToken cancellationToken = default(CancellationToken))
         {
             using (var result = await operations.GetConversationMemberWithHttpMessagesAsync(userId, conversationId, null, cancellationToken).ConfigureAwait(false))
             {
