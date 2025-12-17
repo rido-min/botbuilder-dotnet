@@ -82,7 +82,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(GeneratePackageOnBuild)' == 'True'">
+  <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)\bot_icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
