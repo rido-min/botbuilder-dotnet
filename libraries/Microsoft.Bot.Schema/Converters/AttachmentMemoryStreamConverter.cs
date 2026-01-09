@@ -120,14 +120,14 @@ namespace Microsoft.Bot.Schema.Converters
         {
             if (HasMemoryStream(value))
             {
-                InternalWriteJson(writer, value, serializer);
+                InternalWriteJson(writer, value, serializer, new HashSet<object>(ReferenceEqualityComparer.Instance));
                 return;
             }
 
             JToken.FromObject(value, serializer).WriteTo(writer);
         }
 
-        private static void InternalWriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        private static void InternalWriteJson(JsonWriter writer, object value, JsonSerializer serializer, HashSet<object> visited)
         {
             if (value == null || value is string)
             {
@@ -149,13 +149,21 @@ namespace Microsoft.Bot.Schema.Converters
                 return;
             }
 
+            // For reference types, avoid infinite recursion by tracking visited objects
+            // Value types cannot cause circular references since they are copied by value
+            if (!value.GetType().IsValueType && !visited.Add(value))
+            {
+                writer.WriteNull();
+                return;
+            }
+
             if (value is IDictionary dictionary)
             {
                 writer.WriteStartObject();
                 foreach (DictionaryEntry entry in dictionary)
                 {
                     writer.WritePropertyName(entry.Key.ToString());
-                    InternalWriteJson(writer, entry.Value, serializer);
+                    InternalWriteJson(writer, entry.Value, serializer, visited);
                 }
 
                 writer.WriteEndObject();
@@ -167,7 +175,7 @@ namespace Microsoft.Bot.Schema.Converters
                 writer.WriteStartArray();
                 foreach (var item in collection)
                 {
-                    InternalWriteJson(writer, item, serializer);
+                    InternalWriteJson(writer, item, serializer, visited);
                 }
 
                 writer.WriteEndArray();
@@ -181,7 +189,7 @@ namespace Microsoft.Bot.Schema.Converters
                 foreach (var prop in type.GetProperties())
                 {
                     writer.WritePropertyName(prop.Name);
-                    InternalWriteJson(writer, prop.GetValue(value), serializer);
+                    InternalWriteJson(writer, prop.GetValue(value), serializer, visited);
                 }
 
                 writer.WriteEndObject();
@@ -198,6 +206,11 @@ namespace Microsoft.Bot.Schema.Converters
         /// <returns>True if there is at least one MemoryStream in the list, otherwise false.</returns>
         private static bool HasMemoryStream(object value)
         {
+            return HasMemoryStream(value, new HashSet<object>(ReferenceEqualityComparer.Instance));
+        }
+
+        private static bool HasMemoryStream(object value, HashSet<object> visited)
+        {
             if (value == null || value is string)
             {
                 // Avoid processing strings, since they implement IEnumerable.
@@ -209,11 +222,18 @@ namespace Microsoft.Bot.Schema.Converters
                 return true;
             }
 
+            // For reference types, avoid infinite recursion by tracking visited objects
+            // Value types cannot cause circular references since they are copied by value
+            if (!value.GetType().IsValueType && !visited.Add(value))
+            {
+                return false;
+            }
+
             if (value is IDictionary dictionary)
             {
                 foreach (DictionaryEntry entry in dictionary)
                 {
-                    if (HasMemoryStream(entry.Value))
+                    if (HasMemoryStream(entry.Value, visited))
                     {
                         return true;
                     }
@@ -226,7 +246,7 @@ namespace Microsoft.Bot.Schema.Converters
             {
                 foreach (var item in collection)
                 {
-                    if (HasMemoryStream(item))
+                    if (HasMemoryStream(item, visited))
                     {
                         return true;
                     }
@@ -241,7 +261,7 @@ namespace Microsoft.Bot.Schema.Converters
                 foreach (var prop in type.GetProperties())
                 {
                     var propValue = prop.GetValue(value);
-                    if (HasMemoryStream(propValue))
+                    if (HasMemoryStream(propValue, visited))
                     {
                         return true;
                     }
@@ -260,6 +280,19 @@ namespace Microsoft.Bot.Schema.Converters
 
             [JsonProperty("buffer")]
             public List<byte> Buffer { get; set; }
+        }
+
+        private sealed class ReferenceEqualityComparer : IEqualityComparer<object>
+        {
+            private ReferenceEqualityComparer()
+            {
+            }
+
+            public static ReferenceEqualityComparer Instance { get; } = new ReferenceEqualityComparer();
+
+            public new bool Equals(object x, object y) => ReferenceEquals(x, y);
+
+            public int GetHashCode(object obj) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
         }
     }
 #pragma warning restore CA1812
