@@ -203,6 +203,37 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.Contains("ReadTimeout", ex.Message);
         }
 
+        [Fact]
+        public void AttachmentWithCircularReferenceAndMemoryStreamShouldNotCauseStackOverflow()
+        {
+            var text = "Hi!";
+            var buffer = Encoding.UTF8.GetBytes(text);
+
+            // Create an object with a circular reference that also contains a MemoryStream
+            // This test verifies that the HasMemoryStream method doesn't cause a StackOverflow
+            // when encountering circular references
+            var circularObject = new CircularReferenceObjectWithStream
+            {
+                Stream = new MemoryStream(buffer)
+            };
+            circularObject.Self = circularObject;
+
+            var activity = new Activity
+            {
+                Attachments = new Attachment[]
+                {
+                    new Attachment { ContentType = "circular/stream", Content = circularObject },
+                }
+            };
+
+            // This should not throw a StackOverflowException
+            // The serializer may throw a circular reference error from Json.NET
+            // but that's a different issue - the important thing is no StackOverflow
+            var serialized = JsonConvert.SerializeObject(activity, new JsonSerializerSettings { MaxDepth = null });
+
+            Assert.NotNull(serialized);
+        }
+
         private void AssertAttachment<T>(T activity)
             where T : Activity
         {
@@ -252,6 +283,15 @@ namespace Microsoft.Bot.Schema.Tests
 
             [JsonProperty(PropertyName = "content")]
             public new object Content { get; set; }
+        }
+
+        public class CircularReferenceObjectWithStream
+        {
+            public CircularReferenceObjectWithStream Self { get; set; }
+
+            public string Name { get; set; } = "CircularStreamTest";
+
+            public MemoryStream Stream { get; set; }
         }
     }
 }
