@@ -149,15 +149,12 @@ namespace Microsoft.Bot.Schema.Converters
                 return;
             }
 
-            // Skip value types as they cannot have circular references
-            if (!value.GetType().IsValueType)
+            // For reference types, avoid infinite recursion by tracking visited objects
+            // Value types cannot cause circular references since they are copied by value
+            if (!value.GetType().IsValueType && !visited.Add(value))
             {
-                // Avoid infinite recursion by tracking visited objects
-                if (!visited.Add(value))
-                {
-                    writer.WriteNull();
-                    return;
-                }
+                writer.WriteNull();
+                return;
             }
 
             if (value is IDictionary dictionary)
@@ -225,14 +222,9 @@ namespace Microsoft.Bot.Schema.Converters
                 return true;
             }
 
-            // Skip value types as they cannot have circular references
-            if (value.GetType().IsValueType)
-            {
-                return false;
-            }
-
-            // Avoid infinite recursion by tracking visited objects
-            if (!visited.Add(value))
+            // For reference types, avoid infinite recursion by tracking visited objects
+            // Value types cannot cause circular references since they are copied by value
+            if (!value.GetType().IsValueType && !visited.Add(value))
             {
                 return false;
             }
